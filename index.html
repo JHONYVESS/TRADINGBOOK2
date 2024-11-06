@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Journal de Trading Pro</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+      import { getAuth } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+      window.initFirebase = () => {
+        const firebaseConfig = {
+          apiKey: 'AIzaSyBGzdXerQK4AM52SWE_QUlG1XIrwwO2yPY',
+          authDomain: 'trading-book-3a687.firebaseapp.com',
+          projectId: 'trading-book-3a687',
+          storageBucket: 'trading-book-3a687.firebasestorage.app',
+          messagingSenderId: '950163170201',
+          appId: '1:950163170201:web:67ed759db2e89b2453a908',
+          measurementId: 'G-Y4ZJK5KYRK',
+        };
+        const app = initializeApp(firebaseConfig);
+        return getAuth(app);
+      };
+    </script>
+  </head>
+  <body>
+    <nav>
+      <h1>Journal de Trading Pro</h1>
+      <div class="nav-links">
+        <a href="/" class="active">Dashboard</a>
+        <a href="/performance.html">Performance</a>
+      </div>
+      <div class="auth-buttons">
+        <div class="non-auth-required">
+          <button onclick="window.showAuthModal('login')">Login</button>
+          <button onclick="window.showAuthModal('signup')">Sign Up</button>
+        </div>
+        <div class="auth-required" style="display: none">
+          <button id="addTrade">+ Nouvelle Transaction</button>
+          <button id="exportData">Exporter</button>
+          <button onclick="auth.signOut()">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="auth-required" style="display: none">
+      <div class="dashboard-grid">
+        <div class="stats-card">
+          <h3>Statistiques</h3>
+          <div class="stats-grid">
+            <div>
+              <label>Total Trades:</label>
+              <span id="totalTrades">0</span>
+            </div>
+            <div>
+              <label>Win Rate:</label>
+              <span id="winRate">0%</span>
+            </div>
+            <div>
+              <label>Total P&L:</label>
+              <span id="totalPnL">0 $</span>
+            </div>
+            <div>
+              <label>Avg Return:</label>
+              <span id="avgReturn">0 $</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <canvas id="pnlChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <canvas id="winLossChart"></canvas>
+        </div>
+      </div>
+
+      <div class="trades-table">
+        <h3>Historique des Trades</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Symbol</th>
+              <th>Type</th>
+              <th>Entry</th>
+              <th>Exit</th>
+              <th>Volume</th>
+              <th>P&L</th>
+              <th>R:R</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tradesBody"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <div id="authModal" class="modal">
+      <div class="modal-content">
+        <h2 id="authTitle">Login</h2>
+        <form id="authForm">
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <div class="form-actions">
+            <button type="submit">Submit</button>
+            <button type="button" class="cancel">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="tradeModal" class="modal">
+      <div class="modal-content">
+        <h2>Add Trade</h2>
+        <form id="tradeForm">
+          <div class="form-group">
+            <label for="symbol">Symbol:</label>
+            <input type="text" id="symbol" name="symbol" required />
+          </div>
+          <div class="form-group">
+            <label for="type">Type:</label>
+            <select id="type" name="type" required>
+              <option value="long">Long</option>
+              <option value="short">Short</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="entry">Entry Price:</label>
+            <input type="number" id="entry" name="entry" step="0.01" required />
+          </div>
+          <div class="form-group">
+            <label for="exit">Exit Price:</label>
+            <input type="number" id="exit" name="exit" step="0.01" required />
+          </div>
+          <div class="form-group">
+            <label for="volume">Volume:</label>
+            <input
+              type="number"
+              id="volume"
+              name="volume"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="notes">Notes:</label>
+            <textarea id="notes" name="notes"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit">Submit</button>
+            <button type="button" class="cancel">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

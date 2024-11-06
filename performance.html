@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Analysis - Trading Journal Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+        window.initFirebase = () => {
+            const firebaseConfig = {
+                apiKey: "AIzaSyBGzdXerQK4AM52SWE_QUlG1XIrwwO2yPY",
+                authDomain: "trading-book-3a687.firebaseapp.com",
+                projectId: "trading-book-3a687",
+                storageBucket: "trading-book-3a687.firebasestorage.app",
+                messagingSenderId: "950163170201",
+                appId: "1:950163170201:web:67ed759db2e89b2453a908",
+                measurementId: "G-Y4ZJK5KYRK"
+            };
+            const app = initializeApp(firebaseConfig);
+            return getAuth(app);
+        };
+    </script>
+</head>
+<body>
+    <nav>
+        <h1>Journal de Trading Pro</h1>
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/performance.html" class="active">Performance</a>
+        </div>
+        <div class="auth-buttons">
+            <div class="non-auth-required">
+                <button onclick="window.showAuthModal('login')">Login</button>
+                <button onclick="window.showAuthModal('signup')">Sign Up</button>
+            </div>
+            <div class="auth-required" style="display: none;">
+                <button onclick="auth.signOut()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="auth-required" style="display: none;">
+        <div class="dashboard-grid">
+            <div class="stats-card">
+                <h3>Performance Metrics</h3>
+                <div class="stats-grid">
+                    <div>
+                        <label>Total Trades:</label>
+                        <span id="totalTrades">0</span>
+                    </div>
+                    <div>
+                        <label>Win Rate:</label>
+                        <span id="winRate">0%</span>
+                    </div>
+                    <div>
+                        <label>Profit Factor:</label>
+                        <span id="profitFactor">0</span>
+                    </div>
+                    <div>
+                        <label>Average Return:</label>
+                        <span id="averageReturn">$0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>P&L Evolution</h3>
+                <canvas id="pnlChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Return Distribution</h3>
+                <canvas id="distributionChart"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <h2 id="authTitle">Login</h2>
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Submit</button>
+                    <button type="button" class="cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="performance.js"></script>
+</body>
+</html>
