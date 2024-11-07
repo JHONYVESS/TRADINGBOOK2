@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+  <!-- Previous head content remains the same -->
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,22 +10,23 @@
     <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
       import { getAuth } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-      window.initFirebase = () => {
-        const firebaseConfig = {
-          apiKey: 'AIzaSyBGzdXerQK4AM52SWE_QUlG1XIrwwO2yPY',
-          authDomain: 'trading-book-3a687.firebaseapp.com',
-          projectId: 'trading-book-3a687',
-          storageBucket: 'trading-book-3a687.firebasestorage.app',
-          messagingSenderId: '950163170201',
-          appId: '1:950163170201:web:67ed759db2e89b2453a908',
-          measurementId: 'G-Y4ZJK5KYRK',
-        };
-        const app = initializeApp(firebaseConfig);
-        return getAuth(app);
+      
+      const firebaseConfig = {
+        apiKey: 'AIzaSyBGzdXerQK4AM52SWE_QUlG1XIrwwO2yPY',
+        authDomain: 'trading-book-3a687.firebaseapp.com',
+        projectId: 'trading-book-3a687',
+        storageBucket: 'trading-book-3a687.firebasestorage.app',
+        messagingSenderId: '950163170201',
+        appId: '1:950163170201:web:67ed759db2e89b2453a908',
+        measurementId: 'G-Y4ZJK5KYRK',
       };
+      
+      const app = initializeApp(firebaseConfig);
+      window.auth = getAuth(app);
     </script>
   </head>
   <body>
+    <!-- Previous nav content remains the same -->
     <nav>
       <h1>Journal de Trading Pro</h1>
       <div class="nav-links">
@@ -44,6 +46,7 @@
       </div>
     </nav>
 
+    <!-- Previous main content remains the same -->
     <main class="auth-required" style="display: none">
       <div class="dashboard-grid">
         <div class="stats-card">
@@ -85,6 +88,7 @@
               <th>Type</th>
               <th>Entry</th>
               <th>Exit</th>
+              <th>Stop Loss</th>
               <th>Volume</th>
               <th>P&L</th>
               <th>R:R</th>
@@ -97,6 +101,7 @@
       </div>
     </main>
 
+    <!-- Previous auth modal content remains the same -->
     <div id="authModal" class="modal">
       <div class="modal-content">
         <h2 id="authTitle">Login</h2>
@@ -117,13 +122,22 @@
       </div>
     </div>
 
+    <!-- Updated trade modal with stop loss field -->
     <div id="tradeModal" class="modal">
       <div class="modal-content">
         <h2>Add Trade</h2>
         <form id="tradeForm">
           <div class="form-group">
-            <label for="symbol">Symbol:</label>
-            <input type="text" id="symbol" name="symbol" required />
+            <label for="pair">Symbol:</label>
+            <select id="pair" name="pair" required>
+              <option value="GBPUSD">GBPUSD</option>
+              <option value="EURUSD">EURUSD</option>
+              <option value="USDJPY">USDJPY</option>
+              <option value="USDCAD">USDCAD</option>
+              <option value="USDCHF">USDCHF</option>
+              <option value="AUDUSD">AUDUSD</option>
+              <option value="NZDUSD">NZDUSD</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="type">Type:</label>
@@ -134,21 +148,19 @@
           </div>
           <div class="form-group">
             <label for="entry">Entry Price:</label>
-            <input type="number" id="entry" name="entry" step="0.01" required />
+            <input type="number" id="entry" name="entry" step="0.00001" required />
           </div>
           <div class="form-group">
             <label for="exit">Exit Price:</label>
-            <input type="number" id="exit" name="exit" step="0.01" required />
+            <input type="number" id="exit" name="exit" step="0.00001" required />
+          </div>
+          <div class="form-group">
+            <label for="stopLoss">Stop Loss:</label>
+            <input type="number" id="stopLoss" name="stopLoss" step="0.00001" required />
           </div>
           <div class="form-group">
             <label for="volume">Volume:</label>
-            <input
-              type="number"
-              id="volume"
-              name="volume"
-              step="0.01"
-              required
-            />
+            <input type="number" id="volume" name="volume" step="0.001" required />
           </div>
           <div class="form-group">
             <label for="notes">Notes:</label>
