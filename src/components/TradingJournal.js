@@ -8,6 +8,7 @@ export class TradingJournal {
         this.updateUI();
     }
 
+    // Previous methods remain the same until handleTradeSubmit
     loadUserTrades() {
         if (!this.userId) return [];
         const trades = localStorage.getItem(`trades_${this.userId}`);
@@ -68,15 +69,16 @@ export class TradingJournal {
         const trade = {
             id: Date.now(),
             date: new Date().toISOString(),
-            symbol: formData.get('symbol'),
+            symbol: formData.get('pair'),
             type: formData.get('type'),
             entry: parseFloat(formData.get('entry')),
             exit: parseFloat(formData.get('exit')),
+            stopLoss: parseFloat(formData.get('stopLoss')),
             volume: parseFloat(formData.get('volume')),
-            pnl: this.calculatePnL(formData),
             notes: formData.get('notes')
         };
 
+        trade.pnl = this.calculatePnL(formData);
         this.trades.push(trade);
         this.saveTrades();
         this.updateUI();
@@ -89,10 +91,37 @@ export class TradingJournal {
         const exit = parseFloat(formData.get('exit'));
         const volume = parseFloat(formData.get('volume'));
         const type = formData.get('type');
+        const pair = formData.get('pair');
+      
+        const pipValueByPair = {
+            'GBPUSD': 0.00001,
+            'EURUSD': 0.00001,
+            'USDJPY': 0.01,
+            'USDCAD': 0.0001,
+            'USDCHF': 0.0001,
+            'AUDUSD': 0.0001,
+            'NZDUSD': 0.0001,
+        };
+        const pipvalue = exit - entry;
+        const pips = pipvalue / pipValueByPair[pair] || 0.01;
+      
+        return type === 'long' ? pips * volume : -pips * volume;
+    }
+
+    calculateRR(trade) {
+        const { entry, exit, stopLoss, type } = trade;
         
-        return type === 'long' 
-            ? (exit - entry) * volume
-            : (entry - exit) * volume;
+        if (type === 'long') {
+            // Pour un trade long
+            const risk = Math.abs(entry - stopLoss); // Distance entre l'entrée et le stop loss
+            const reward = Math.abs(exit - entry); // Distance entre l'entrée et la sortie
+            return (reward / risk).toFixed(2);
+        } else {
+            // Pour un trade short
+            const risk = Math.abs(stopLoss - entry); // Distance entre le stop loss et l'entrée
+            const reward = Math.abs(entry - exit); // Distance entre l'entrée et la sortie
+            return (reward / risk).toFixed(2);
+        }
     }
 
     updateUI() {
@@ -102,6 +131,8 @@ export class TradingJournal {
     }
 
     updateStats() {
+        if (!this.stats.totalTrades) return;
+
         const totalTrades = this.trades.length;
         const winningTrades = this.trades.filter(t => t.pnl > 0).length;
         const totalPnL = this.trades.reduce((sum, t) => sum + t.pnl, 0);
@@ -128,6 +159,7 @@ export class TradingJournal {
                     <td>${trade.type}</td>
                     <td>${trade.entry}</td>
                     <td>${trade.exit}</td>
+                    <td>${trade.stopLoss}</td>
                     <td>${trade.volume}</td>
                     <td class="${trade.pnl > 0 ? 'positive' : 'negative'}">
                         ${trade.pnl.toFixed(2)} $
@@ -135,7 +167,7 @@ export class TradingJournal {
                     <td>${this.calculateRR(trade)}</td>
                     <td>${trade.notes}</td>
                     <td>
-                        <button onclick="journal.deleteTrade(${trade.id})">Delete</button>
+                        <button onclick="window.journal.deleteTrade(${trade.id})">Delete</button>
                     </td>
                 </tr>
             `).join('');
@@ -193,17 +225,6 @@ export class TradingJournal {
                 }]
             }
         });
-    }
-
-    calculateRR(trade) {
-        const stopLoss = trade.type === 'long' 
-            ? trade.entry * 0.99  // 1% stop loss
-            : trade.entry * 1.01;
-        
-        const risk = Math.abs(trade.entry - stopLoss) * trade.volume;
-        const reward = trade.pnl;
-        
-        return (reward / risk).toFixed(2);
     }
 
     deleteTrade(id) {
